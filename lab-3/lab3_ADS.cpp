@@ -504,12 +504,12 @@ TreeNode* parseNode(const char* s, int& pos) {
 }
 
 
-void iterativePreorder(TreeNode* root) {
-    Stack<TreeNode*> st;
+void iterativePreorder(AVLNode* root) {
+    Stack<AVLNode*> st;
     if (root) st.push(root);
 
     while (!st.isEmpty()) {
-        TreeNode* node = st.get();
+        AVLNode* node = st.get();
         st.pop();
         cout << node->value << " ";
 
@@ -518,9 +518,9 @@ void iterativePreorder(TreeNode* root) {
     }
 }
 
-void iterativeInorder(TreeNode* root) {
-    Stack<TreeNode*> st;
-    TreeNode* cur = root;
+void iterativeInorder(AVLNode* root) {
+    Stack<AVLNode*> st;
+    AVLNode* cur = root;
 
     while (cur || !st.isEmpty()) {
         while (cur) {
@@ -534,12 +534,12 @@ void iterativeInorder(TreeNode* root) {
     }
 }
 
-void iterativePostorder(TreeNode* root) {
-    Stack<TreeNode*> st1, st2;
+void iterativePostorder(AVLNode* root) {
+    Stack<AVLNode*> st1, st2;
     if (root) st1.push(root);
 
     while (!st1.isEmpty()) {
-        TreeNode* n = st1.get(); st1.pop();
+        AVLNode* n = st1.get(); st1.pop();
         st2.push(n);
 
         if (n->left)  st1.push(n->left);
@@ -558,23 +558,31 @@ void buildAVLFromBinary(TreeNode* root, AVLNode*& avl) {
     buildAVLFromBinary(root->left, avl);
     buildAVLFromBinary(root->right, avl);
 }
+void levelOrderPrint(AVLNode *root){
+        if (root==nullptr){
+            return;
+        }
+        Queue<AVLNode*> queue;
+        queue.push(root);
+        while (!queue.isEmpty()){
+            AVLNode* temp = queue.front()->value;
+            cout << temp->value << " ";
+            queue.pop();
+            if (temp->left!=nullptr){
+                queue.push(temp->left);
+            }
+            if(temp->right!=nullptr){
+                queue.push(temp->right);
+            }
+        }
+    }
 
-void avlInorderRecursive(AVLNode* node) {
-    if (!node) return;
-    avlInorderRecursive(node->left);
-    cout << node->value << " ";
-    avlInorderRecursive(node->right);
-}
-
-#include <iostream>
-#include <fstream>
-using namespace std;
 
 int main() {
     ifstream fin("tree.txt");
     if (!fin) {
-        cout << "Не удалось открыть файл tree.txt\n";
-        return 1;
+        cout << "Failed to open file \"tree.txt\"\n";
+        return 0;
     }
 
     string input, line;
@@ -584,20 +592,20 @@ int main() {
     fin.close();
 
     if (input.empty()) {
-        cout << "Файл пустой\n";
-        return 1;
+        cout << "File is empty\n";
+        return 0;
     }
     int pos = 0;
     TreeNode* root = parseNode(input.c_str(), pos);
 
     if (!root) {
-        cout << "Ошибка в скобочной записи\n";
-        return 1;
+        cout << "Error in parentheses\n";
+        return 0;
     }
 
-    cout << "Бинарное дерево загружено из файла.\n";
+    cout << "Binary tree loaded from file\n";
 
-    cout << "Симметричный обход бинарного дерева:\n";
+    cout << "Inorder of a binary tree\n";
     BinaryTree bt(root);
     bt.symmetricOrderPrint(root);
     cout << "\n";
@@ -605,9 +613,20 @@ int main() {
     AVLNode* avl = nullptr;
     buildAVLFromBinary(root, avl);
 
-    cout << "Симметричный обход AVL:\n";
-    avlInorderRecursive(avl);
+    cout << "Preorder of a AVL tree\n";
+    iterativePreorder(avl);
     cout << "\n";
 
+    cout << "Inorder of a AVL tree\n";
+    iterativeInorder(avl);
+    cout << "\n";
+
+    cout << "Postorder of a AVL tree\n";
+    iterativePostorder(avl);
+    cout << "\n";
+
+    cout << "Levelorder of a AVL tree\n";
+    levelOrderPrint(avl);
+    cout << "\n";
     return 0;
 }
